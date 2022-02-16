@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -33,12 +34,14 @@ public class ParkingSpotController {
         if(parkingSpotService.existsByApartamentAndBlock(parkingSpotDto.getApartament(), parkingSpotDto.getBlock())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Conflict: Parking Spot already registred for this apartament/block!");
         }
-
-
-
         var parkingSpotModel = new ParkingSpotModel();
         BeanUtils.copyProperties(parkingSpotDto, parkingSpotModel);
         parkingSpotModel.setRegistrationDate(LocalDateTime.now(ZoneId.of("UTC")));
         return ResponseEntity.status(HttpStatus.CREATED).body(parkingSpotService.save(parkingSpotModel));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ParkingSpotModel>> getAllParkingSpot(){
+        return ResponseEntity.status(HttpStatus.OK).body(parkingSpotService.findAll());
     }
 }
